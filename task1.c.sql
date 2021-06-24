@@ -25,25 +25,10 @@ WHERE OwnerProperty.OwnerId = '1426'
 
 
 /*task1.c.ii*/
-SELECT OwnerProperty.OwnerId,
-	   SUM(
-		   CASE
-			 WHEN TargetRentType.Name = 'Fortnightly' THEN (DATEDIFF(Week, TenantProperty.StartDate, TenantProperty.EndDate)/2) * prp.Amount
-			 WHEN TargetRentType.Name = 'Weekly' THEN DATEDIFF(Week, TenantProperty.StartDate, TenantProperty.EndDate) * prp.Amount
-			 WHEN TargetRentType.Name = 'Monthly' THEN DATEDIFF(month, TenantProperty.StartDate, TenantProperty.EndDate) * prp.Amount
-			 ELSE ''
-		   END
-		  )AS Total_Yield
-FROM Property
-	  INNER JOIN OwnerProperty ---Join between Property AND OwnerProperty
-	  ON Property.Id = OwnerProperty.PropertyId
-	  INNER JOIN PropertyRentalPayment prp --- Join between Property AND PropertyRentalPayment
-	  ON Property.id = prp.PropertyId
-	  INNER JOIN TargetRentType --- Join between Property AND TargetRentType
-	  ON Property.TargetRentTypeId = TargetRentType.Id
-	  INNER JOIN TenantProperty --- Join between Property AND TenantProperty
-									/*Caution: there is no relationship between two tables
-									   though each record shows a strong relationship*/
-	  ON Property.Id = TenantProperty.PropertyId
+SELECT Property.Id AS Property_ID, PropertyFinance.Yield
+ FROM Property
+ INNER JOIN PropertyFinance
+  ON Property.id = PropertyFinance.PropertyId
+ INNER JOIN OwnerProperty
+  ON Property.id = OwnerProperty.PropertyId
 WHERE OwnerProperty.OwnerId = '1426'
-GROUP BY OwnerProperty.OwnerId
